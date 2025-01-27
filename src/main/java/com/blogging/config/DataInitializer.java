@@ -53,16 +53,19 @@ public class DataInitializer {
 
         // Insert comments
         jdbcTemplate.execute("""
-            INSERT INTO comment (blog_id, comment, name)
-            SELECT blog_id,
-                   CONCAT('This is a comment for blog ', blog_id) AS comment,
-                   CONCAT('User ', FLOOR(1 + (RANDOM() * 100))) AS name
-            FROM (
-                SELECT id AS blog_id
-                FROM blog
-                ORDER BY RANDOM()
-                LIMIT 500
-            ) AS valid_blogs;
+            INSERT INTO comment (blog_id, content, name, user_id, timestamp)
+                                    SELECT blog_id,
+                                           CONCAT('This is a comment for blog ', blog_id) AS content,
+                                           CONCAT('User ', FLOOR(1 + (RANDOM() * 100))) AS name,
+                                           FLOOR(1 + (RANDOM() * 100)) AS user_id, -- Generate random user_id
+                                           NOW() AS timestamp -- Use the current timestamp
+                                    FROM (
+                                        SELECT id AS blog_id
+                                        FROM blog
+                                        ORDER BY RANDOM()
+                                        LIMIT 500
+                                    ) AS valid_blogs;
+                                    ;
         """);
 
         // Insert favorites

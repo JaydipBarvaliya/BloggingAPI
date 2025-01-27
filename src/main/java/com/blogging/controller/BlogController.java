@@ -57,19 +57,23 @@ public class BlogController {
 
     @GetMapping(value = "/{id}/comments", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<CommentDTO>> getCommentsByBlogId(@PathVariable Long id) {
+        // Fetch comments for the given blog ID
         List<Comment> comments = commentRepository.findByBlogId(id);
 
-        // Map Comment entities to CommentDTOs
-        List<CommentDTO> commentDTOs = comments.stream()
+        // Map Comment entities to CommentDto objects
+        List<CommentDTO> DTOs = comments.stream()
                 .map(comment -> new CommentDTO(
                         comment.getId(),
+                        comment.getContent(),
+                        comment.getUserId(),
                         comment.getName(),
-                        comment.getComment()
+                        comment.getTimestamp().toString() // Convert LocalDateTime to String
                 ))
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(commentDTOs);
+        return ResponseEntity.ok(DTOs);
     }
+
 
     @PostMapping("/{id}/comments")
     public ResponseEntity<Comment> addCommentToBlog(@PathVariable Long id, @RequestBody Comment comment) {

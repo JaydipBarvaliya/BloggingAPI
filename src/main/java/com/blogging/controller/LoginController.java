@@ -51,7 +51,9 @@ public class LoginController {
         String token = jwtTokenUtil.generateToken(user.getEmail());
         return ResponseEntity.ok(Map.of(
                 "token", token,
-                "userId", user.getId()
+                "userId", user.getId(),
+                "firstName", user.getFirstName(),
+                "lastName", user.getLastName()
         ));
     }
 }
