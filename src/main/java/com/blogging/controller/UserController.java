@@ -6,8 +6,6 @@ import com.blogging.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -20,12 +18,9 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getUserById(@PathVariable Long id) {
-        Optional<Userr> user = userService.getUserById(id);
-        if (user.isPresent()) {
-            return ResponseEntity.ok(user.get()); // Return the Userr object if found
-        } else {
-            return ResponseEntity.status(404).body("User not found"); // Return a 404 status with a String message
-        }
+        return userService.getUserById(id)
+                .<ResponseEntity<Object>>map(ResponseEntity::ok) // Explicitly define the return type
+                .orElseGet(() -> ResponseEntity.status(404).body("User not found")); // Return 404 with a String message
     }
 
     @PutMapping("/{id}")
@@ -34,9 +29,9 @@ public class UserController {
             Userr user = userService.updateUser(id, updatedUser);
             return ResponseEntity.ok(user);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
+            return ResponseEntity.status(404).body(e.getMessage()); // Handle user not found
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred while updating the profile.");
+            return ResponseEntity.status(500).body("An unexpected error occurred while updating the profile."); // Handle other errors
         }
     }
 
@@ -45,8 +40,10 @@ public class UserController {
         try {
             userService.updateUserPassword(id, request.getPassword());
             return ResponseEntity.ok("Password updated successfully!");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400).body(e.getMessage()); // Handle validation errors
         } catch (Exception e) {
-            return ResponseEntity.status(400).body(e.getMessage());
+            return ResponseEntity.status(500).body("An unexpected error occurred while updating the password."); // Handle other errors
         }
     }
 }
