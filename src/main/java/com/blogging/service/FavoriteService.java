@@ -15,9 +15,7 @@ import java.util.List;
 public class FavoriteService {
 
     private final FavoriteRepository favoriteRepository;
-
     private final BlogRepository blogRepository;
-
     private final UserRepository userRepository;
 
 

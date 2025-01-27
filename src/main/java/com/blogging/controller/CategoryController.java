@@ -1,9 +1,12 @@
 package com.blogging.controller;
 
 import com.blogging.entity.Blog;
-import com.blogging.repository.BlogRepository;
+import com.blogging.service.CategoryService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -11,31 +14,22 @@ import java.util.List;
 @RequestMapping("/api/categories")
 public class CategoryController {
 
-    private final BlogRepository blogRepository;
+    private final CategoryService categoryService;
 
-    public CategoryController(BlogRepository blogRepository) {
-        this.blogRepository = blogRepository;
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
     }
 
     @GetMapping
-    public ResponseEntity<?> getCategories() {
-        List<String> categories = blogRepository.findDistinctCategories();
-
-        if (categories.isEmpty()) {
-            return ResponseEntity.status(404).body("No categories found");
-        }
-
+    public ResponseEntity<List<String>> getCategories() {
+        List<String> categories = categoryService.getAllCategories();
         return ResponseEntity.ok(categories);
     }
 
+    // Fetch blogs by category
     @GetMapping("/{category}/blogs")
-    public ResponseEntity<?> getBlogsByCategory(@PathVariable String category) {
-        List<Blog> blogs = blogRepository.findByCategory(category);
-
-        if (blogs.isEmpty()) {
-            return ResponseEntity.status(404).body("No blogs found for category: " + category);
-        }
-
+    public ResponseEntity<List<Blog>> getBlogsByCategory(@PathVariable String category) {
+        List<Blog> blogs = categoryService.getBlogsByCategory(category);
         return ResponseEntity.ok(blogs);
     }
 }

@@ -1,13 +1,16 @@
 package com.blogging.service;
 
+import com.blogging.DTO.BlogDTO;
 import com.blogging.entity.Blog;
 import com.blogging.entity.Comment;
+import com.blogging.exception.ResourceNotFoundException;
 import com.blogging.repository.BlogRepository;
 import com.blogging.repository.CommentRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BlogService {
@@ -20,12 +23,34 @@ public class BlogService {
         this.commentRepository = commentRepository;
     }
 
-    public List<Blog> getAllBlogs() {
-        return blogRepository.findAll();
+
+
+    public List<BlogDTO> getAllBlogs() {
+        return blogRepository.findAll().stream()
+                .map(blog -> new BlogDTO(
+                        blog.getId(),
+                        blog.getTitle(),
+                        blog.getSummary(),
+                        blog.getContent(),
+                        blog.getImage(),
+                        blog.getAuthor(),
+                        blog.getCategory()
+                ))
+                .collect(Collectors.toList());
     }
 
-    public Optional<Blog> getBlogById(Long id) {
-        return blogRepository.findById(id);
+    public BlogDTO getBlogById(Long id) {
+        Blog blog = blogRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Blog with ID " + id + " not found"));
+        return new BlogDTO(
+                blog.getId(),
+                blog.getTitle(),
+                blog.getSummary(),
+                blog.getContent(),
+                blog.getImage(),
+                blog.getAuthor(),
+                blog.getCategory()
+        );
     }
 
     public List<Comment> getCommentsByBlogId(Long blogId) {

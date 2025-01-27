@@ -24,22 +24,14 @@ public class LikesController {
     // Endpoint to like a blog
     @PostMapping
     public ResponseEntity<String> likeBlog(@RequestParam Long blogId, @RequestParam String userId) {
-        try {
             likesService.likeBlog(blogId, userId);
             return ResponseEntity.ok("Blog liked successfully.");
-        } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
     }
 
     @DeleteMapping
     public ResponseEntity<String> unlikeBlog(@RequestParam Long blogId, @RequestParam String userId) {
-        try {
             likesService.unlikeBlog(blogId, userId);
             return ResponseEntity.ok("Blog unliked successfully.");
-        } catch (IllegalStateException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
     }
 
     @GetMapping("/isLiked")
@@ -47,7 +39,5 @@ public class LikesController {
         boolean isLiked = likesService.isBlogLikedByUser(blogId, userId);
         return ResponseEntity.ok(isLiked);
     }
-
-
 
 }

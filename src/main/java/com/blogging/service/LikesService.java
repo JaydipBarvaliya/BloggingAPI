@@ -1,10 +1,9 @@
 package com.blogging.service;
 
 import com.blogging.entity.Like;
+import com.blogging.exception.ResourceNotFoundException;
 import com.blogging.repository.LikeRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class LikesService {
@@ -17,18 +16,18 @@ public class LikesService {
 
     // Like a blog
     public void likeBlog(Long blogId, String userId) {
-        // Check if the user has already liked the blog
-        Optional<Like> existingLike = likeRepository.findByBlogIdAndUserId(blogId, userId);
 
-        if (existingLike.isPresent()) {
+        if (isBlogLikedByUser(blogId, userId)) {
             throw new IllegalStateException("You have already liked this blog.");
         }
 
-        Like newLike = new Like();
-        newLike.setBlogId(blogId);
-        newLike.setUserId(userId);
-
+        Like newLike = new Like(blogId, userId); // Assuming Like has a constructor
         likeRepository.save(newLike);
+    }
+
+    public void unlikeBlog(Long blogId, String userId) {
+        Like existingLike = getExistingLike(blogId, userId);
+        likeRepository.delete(existingLike);
     }
 
     // Get the total likes for a blog
@@ -36,17 +35,12 @@ public class LikesService {
         return likeRepository.countByBlogId(blogId);
     }
 
-    public void unlikeBlog(Long blogId, String userId) {
-        Optional<Like> existingLike = likeRepository.findByBlogIdAndUserId(blogId, userId);
-
-        if (existingLike.isEmpty()) {
-            throw new IllegalStateException("You have not liked this blog.");
-        }
-
-        likeRepository.delete(existingLike.get());
-    }
-
     public boolean isBlogLikedByUser(Long blogId, String userId) {
         return likeRepository.findByBlogIdAndUserId(blogId, userId).isPresent();
+    }
+
+    private Like getExistingLike(Long blogId, String userId) {
+        return likeRepository.findByBlogIdAndUserId(blogId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("You have not liked this blog."));
     }
 }
