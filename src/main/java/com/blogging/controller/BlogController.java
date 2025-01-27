@@ -4,6 +4,7 @@ import com.blogging.DTO.BlogDTO;
 import com.blogging.DTO.CommentDTO;
 import com.blogging.entity.Blog;
 import com.blogging.entity.Comment;
+import com.blogging.exception.ResourceNotFoundException;
 import com.blogging.repository.BlogRepository;
 import com.blogging.repository.CommentRepository;
 import com.blogging.service.BlogService;
@@ -12,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -51,8 +51,9 @@ public class BlogController {
 
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Blog> getBlogById(@PathVariable Long id) {
-        Optional<Blog> blog = blogService.getBlogById(id);
-        return blog.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        Blog blog = blogService.getBlogById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Blog with ID " + id + " not found"));
+        return ResponseEntity.ok(blog);
     }
 
     @GetMapping(value = "/{id}/comments", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -77,8 +78,9 @@ public class BlogController {
 
     @PostMapping("/{id}/comments")
     public ResponseEntity<Comment> addCommentToBlog(@PathVariable Long id, @RequestBody Comment comment) {
-        Optional<Comment> createdComment = blogService.addCommentToBlog(id, comment);
-        return createdComment.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        Comment createdComment = blogService.addCommentToBlog(id, comment)
+                .orElseThrow(() -> new ResourceNotFoundException("Blog with ID " + id + " not found"));
+        return ResponseEntity.ok(createdComment);
     }
 
 }
