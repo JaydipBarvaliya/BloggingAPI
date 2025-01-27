@@ -8,6 +8,8 @@ import java.util.Optional;
 
 @Repository
 public interface LikeRepository extends JpaRepository<Like, Long> {
+
     Optional<Like> findByBlogIdAndUserId(Long blogId, String userId);
+
     int countByBlogId(Long blogId);
 }
