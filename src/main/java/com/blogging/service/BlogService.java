@@ -34,7 +34,7 @@ public class BlogService {
 
     public Optional<Comment> addCommentToBlog(Long blogId, Comment comment) {
         return blogRepository.findById(blogId).map(blog -> {
-            comment.setBlog(blog);
+            comment.setId(blogId);
             return commentRepository.save(comment);
         });
     }
