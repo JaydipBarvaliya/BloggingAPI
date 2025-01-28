@@ -75,9 +75,10 @@ public class CommentService {
                 .map(comment -> new CommentDTO(
                         comment.getId(),
                         comment.getContent(),
-                        comment.getUserId(),
                         comment.getName(),
-                        comment.getTimestamp().toString()
+                        comment.getTimestamp().toString(),
+                        comment.getUserId(),
+                        comment.getBlog().getId()
                 ))
                 .collect(Collectors.toList());
     }
@@ -92,9 +93,10 @@ public class CommentService {
         return new CommentDTO(
                 savedComment.getId(),
                 savedComment.getContent(),
-                savedComment.getUserId(),
                 savedComment.getName(),
-                savedComment.getTimestamp().toString()
+                savedComment.getTimestamp().toString(),
+                savedComment.getUserId(),
+                savedComment.getBlog().getId()
         );
     }
 

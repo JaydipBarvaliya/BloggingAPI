@@ -6,9 +6,10 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class CommentDTO {
-    private Long blogId;
+    private Long id;
     private String content;
-    private Long userId;
-    private String name; // Full name of the user
+    private String name;
     private String timestamp; // String for JSON compatibility
+    private Long userId;
+    private Long blogId;
 }
