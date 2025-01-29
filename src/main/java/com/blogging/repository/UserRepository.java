@@ -17,8 +17,8 @@ public interface UserRepository extends JpaRepository<AppUser, Long> {
 
     boolean existsByEmail(String email);
 
-    @Query("SELECT COUNT(u) > 0 FROM AppUser u JOIN u.likedBlogs lb WHERE u.id = :userId AND lb.id = :blogId")
-    boolean existsByIdAndLikedBlogs_Id(@Param("userId") Long userId, @Param("blogId") Long blogId);
+    @Query("SELECT COUNT(u) > 0 FROM AppUser u JOIN u.clappedBlogs lb WHERE u.id = :userId AND lb.id = :blogId")
+    boolean isBlogClappedByUser(@Param("userId") Long userId, @Param("blogId") Long blogId);
 
     @Query("SELECT COUNT(u) > 0 FROM AppUser u JOIN u.favoritedBlogs fb WHERE u.id = :userId AND fb.id = :blogId")
     boolean existsByIdAndFavoritedBlogs_Id(@Param("userId") Long userId, @Param("blogId") Long blogId);

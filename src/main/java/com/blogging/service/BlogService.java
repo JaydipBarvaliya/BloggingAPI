@@ -5,9 +5,10 @@ import com.blogging.entity.AppUser;
 import com.blogging.entity.Blog;
 import com.blogging.exception.ResourceNotFoundException;
 import com.blogging.repository.BlogRepository;
-import com.blogging.repository.LikeRepository;
+import com.blogging.repository.ClapRepository;
 import com.blogging.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,13 +22,13 @@ public class BlogService {
 
     private final BlogRepository blogRepository;
     private final UserRepository userRepository;
-    private final LikeRepository likeRepository;
+    private final ClapRepository clapRepository;
 
 
-    public BlogService(BlogRepository blogRepository, UserRepository userRepository, LikeRepository likeRepository) {
+    public BlogService(BlogRepository blogRepository, UserRepository userRepository, ClapRepository clapRepository) {
         this.blogRepository = blogRepository;
         this.userRepository = userRepository;
-        this.likeRepository = likeRepository;
+        this.clapRepository = clapRepository;
     }
 
 
@@ -59,22 +60,27 @@ public class BlogService {
         );
     }
 
-    // ✅ Toggle Like
+    // ✅ Toggle Clap
     @Transactional
-    public void toggleLike(Long blogId, Long userId) {
+    public ResponseEntity<String> clapUnclap(Long blogId, Long userId) {
         Blog blog = blogRepository.findById(blogId)
                 .orElseThrow(() -> new IllegalArgumentException("Blog not found"));
 
         AppUser user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        if (user.getLikedBlogs().contains(blog)) {
-            user.getLikedBlogs().remove(blog);
+        if (user.getClappedBlogs().contains(blog)) {
+            user.getClappedBlogs().remove(blog);
+            userRepository.save(user);
+            return ResponseEntity.ok("Unclapped successfully");
+
         } else {
-            user.getLikedBlogs().add(blog);
+            user.getClappedBlogs().add(blog);
+            userRepository.save(user);
+            return ResponseEntity.ok("Clapped successfully");
         }
 
-        userRepository.save(user);
+
     }
 
     // ✅ Toggle Favorite
@@ -95,9 +101,9 @@ public class BlogService {
         userRepository.save(user);
     }
 
-    // ✅ Check if User Liked Blog
+    // ✅ Check if User Clapped Blog
     public boolean isBlogClappedByUser(Long blogId, Long userId) {
-        return userRepository.existsByIdAndLikedBlogs_Id(userId, blogId);
+        return userRepository.isBlogClappedByUser(userId, blogId);
     }
 
     // ✅ Check if User Favorited Blog
@@ -117,6 +123,6 @@ public class BlogService {
     }
 
     public int getClapsCount(Long blogId) {
-        return likeRepository.countClapsByBlogId(blogId); // ✅ Call repository method
+        return clapRepository.countClapsByBlogId(blogId); // ✅ Call repository method
     }
 }
