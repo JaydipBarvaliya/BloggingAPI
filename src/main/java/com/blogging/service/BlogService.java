@@ -116,7 +116,7 @@ public class BlogService {
         return new ArrayList<>(favoriteBlogs);
     }
 
-    public int getLikesCount(Long blogId) {
-        return likeRepository.countLikesByBlogId(blogId); // ✅ Call repository method
+    public int getClapsCount(Long blogId) {
+        return likeRepository.countClapsByBlogId(blogId); // ✅ Call repository method
     }
 }

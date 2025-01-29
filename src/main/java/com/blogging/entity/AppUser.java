@@ -32,9 +32,8 @@ public class AppUser {
     private Set<Comment> comments = new HashSet<>();
 
     @ManyToMany
-//    @JsonBackReference
     @JoinTable(
-            name = "likes",
+            name = "claps",
             joinColumns = @JoinColumn(name = "app_user_id"),
             inverseJoinColumns = @JoinColumn(name = "blog_id"))
     private Set<Blog> likedBlogs = new HashSet<>();

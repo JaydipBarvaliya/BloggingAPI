@@ -90,9 +90,9 @@ public class BlogController {
 
     // ✅ Claps Count
     @GetMapping("/{blogId}/claps-count")
-    public ResponseEntity<Map<String, Integer>> getBlogLikesCount(@PathVariable Long blogId) {
-        int likesCount = blogService.getLikesCount(blogId);
-        return ResponseEntity.ok(Collections.singletonMap("count", likesCount)); // ✅ Return likes as JSON
+    public ResponseEntity<Map<String, Integer>> getBlogClapsCount(@PathVariable Long blogId) {
+        int clapsCount = blogService.getClapsCount(blogId);
+        return ResponseEntity.ok(Collections.singletonMap("count", clapsCount)); // ✅ Return claps as JSON
     }
 
 
