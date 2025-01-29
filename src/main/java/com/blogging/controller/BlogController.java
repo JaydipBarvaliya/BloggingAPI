@@ -49,37 +49,14 @@ public class BlogController {
     }
 
 
-    @GetMapping("/{blogId}/likes-count")
-    public ResponseEntity<Map<String, Integer>> getBlogLikesCount(@PathVariable Long blogId) {
-        int likesCount = blogService.getLikesCount(blogId);
-        return ResponseEntity.ok(Collections.singletonMap("count", likesCount)); // ✅ Return likes as JSON
-    }
 
 
-
-
-
-
-
-    // ✅ Toggle Like
-    @PostMapping("/{blogId}/like/{userId}")
-    public ResponseEntity<String> toggleLike(@PathVariable Long blogId, @PathVariable Long userId) {
-        blogService.toggleLike(blogId, userId);
-        return ResponseEntity.ok("Like toggled successfully");
-    }
 
     // ✅ Toggle Favorite
     @PostMapping("/{blogId}/favorite/{userId}")
     public ResponseEntity<String> toggleFavorite(@PathVariable Long blogId, @PathVariable Long userId) {
         blogService.toggleFavorite(blogId, userId);
         return ResponseEntity.ok("Favorite toggled successfully");
-    }
-
-    // ✅ Check if Liked
-    @GetMapping("/{blogId}/liked/{userId}")
-    public ResponseEntity<Boolean> isBlogLikedByUser(@PathVariable Long blogId, @PathVariable Long userId) {
-        boolean liked = blogService.isBlogLikedByUser(blogId, userId);
-        return ResponseEntity.ok(liked);
     }
 
     // ✅ Check if Favorited
@@ -94,6 +71,32 @@ public class BlogController {
         List<Blog> favoriteBlogs = blogService.getFavoriteBlogsByUser(userId);
         return ResponseEntity.ok(favoriteBlogs);
     }
+
+
+
+    // ✅ Check if Clapped
+    @GetMapping("/{blogId}/clapped/{userId}")
+    public ResponseEntity<Boolean> isBlogClappedByUser(@PathVariable Long blogId, @PathVariable Long userId) {
+        boolean liked = blogService.isBlogClappedByUser(blogId, userId);
+        return ResponseEntity.ok(liked);
+    }
+
+    // ✅ Clapped -  Unclapped
+    @PostMapping("/{blogId}/clap/{userId}")
+    public ResponseEntity<String> toggleLike(@PathVariable Long blogId, @PathVariable Long userId) {
+        blogService.toggleLike(blogId, userId);
+        return ResponseEntity.ok("Like toggled successfully");
+    }
+
+    // ✅ Claps Count
+    @GetMapping("/{blogId}/claps-count")
+    public ResponseEntity<Map<String, Integer>> getBlogLikesCount(@PathVariable Long blogId) {
+        int likesCount = blogService.getLikesCount(blogId);
+        return ResponseEntity.ok(Collections.singletonMap("count", likesCount)); // ✅ Return likes as JSON
+    }
+
+
+
 
 
 
