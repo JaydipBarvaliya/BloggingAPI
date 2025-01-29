@@ -8,7 +8,9 @@ import com.blogging.service.CommentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/blogs")
@@ -46,6 +48,12 @@ public class BlogController {
         return ResponseEntity.ok(createdComment);
     }
 
+
+    @GetMapping("/{blogId}/likes-count")
+    public ResponseEntity<Map<String, Integer>> getBlogLikesCount(@PathVariable Long blogId) {
+        int likesCount = blogService.getLikesCount(blogId);
+        return ResponseEntity.ok(Collections.singletonMap("count", likesCount)); // ✅ Return likes as JSON
+    }
 
 
 
@@ -86,6 +94,7 @@ public class BlogController {
         List<Blog> favoriteBlogs = blogService.getFavoriteBlogsByUser(userId);
         return ResponseEntity.ok(favoriteBlogs);
     }
+
 
 
 }

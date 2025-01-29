@@ -3,28 +3,31 @@ package com.blogging.service;
 import com.blogging.DTO.BlogDTO;
 import com.blogging.entity.AppUser;
 import com.blogging.entity.Blog;
-import com.blogging.entity.Comment;
 import com.blogging.exception.ResourceNotFoundException;
 import com.blogging.repository.BlogRepository;
-import com.blogging.repository.CommentRepository;
+import com.blogging.repository.LikeRepository;
 import com.blogging.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class BlogService {
 
     private final BlogRepository blogRepository;
-    private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final LikeRepository likeRepository;
 
-    public BlogService(BlogRepository blogRepository, CommentRepository commentRepository, UserRepository userRepository) {
+
+    public BlogService(BlogRepository blogRepository, UserRepository userRepository, LikeRepository likeRepository) {
         this.blogRepository = blogRepository;
-        this.commentRepository = commentRepository;
         this.userRepository = userRepository;
+        this.likeRepository = likeRepository;
     }
 
 
@@ -55,18 +58,6 @@ public class BlogService {
                 blog.getCategory()
         );
     }
-
-    public List<Comment> getCommentsByBlogId(Long blogId) {
-        return commentRepository.findByBlogId(blogId);
-    }
-
-    public Optional<Comment> addCommentToBlog(Long blogId, Comment comment) {
-        return blogRepository.findById(blogId).map(blog -> {
-            comment.setId(blogId);
-            return commentRepository.save(comment);
-        });
-    }
-
 
     // ✅ Toggle Like
     @Transactional
@@ -123,5 +114,9 @@ public class BlogService {
 
         // Convert to List before returning
         return new ArrayList<>(favoriteBlogs);
+    }
+
+    public int getLikesCount(Long blogId) {
+        return likeRepository.countLikesByBlogId(blogId); // ✅ Call repository method
     }
 }
