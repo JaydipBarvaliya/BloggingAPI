@@ -38,6 +38,8 @@ public class Blog {
     private String title;
 
     @ManyToMany(mappedBy = "likedBlogs")
+//    @JsonManagedReference
+    @JsonIgnore
     private Set<AppUser> usersWhoLiked = new HashSet<>();
 
     @ManyToMany(mappedBy = "favoritedBlogs", fetch = FetchType.LAZY)

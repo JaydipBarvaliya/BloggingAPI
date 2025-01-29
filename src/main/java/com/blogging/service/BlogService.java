@@ -96,7 +96,7 @@ public class BlogService {
     }
 
     // ✅ Check if User Liked Blog
-    public boolean isBlogLikedByUser(Long blogId, Long userId) {
+    public boolean isBlogClappedByUser(Long blogId, Long userId) {
         return userRepository.existsByIdAndLikedBlogs_Id(userId, blogId);
     }
 
