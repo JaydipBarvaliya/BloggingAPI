@@ -1,13 +1,25 @@
 package com.blogging.repository;
 
-import com.blogging.entity.Userr;
+import com.blogging.entity.AppUser;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<Userr, Long> {
+public interface UserRepository extends JpaRepository<AppUser, Long> {
 
-    Optional<Userr> findByEmail(String email);
+    @EntityGraph(attributePaths = "favoritedBlogs")
+    Optional<AppUser> findById(Long id);
+
+    Optional<AppUser> findByEmail(String email);
 
     boolean existsByEmail(String email);
+
+    @Query("SELECT COUNT(u) > 0 FROM AppUser u JOIN u.likedBlogs lb WHERE u.id = :userId AND lb.id = :blogId")
+    boolean existsByIdAndLikedBlogs_Id(@Param("userId") Long userId, @Param("blogId") Long blogId);
+
+    @Query("SELECT COUNT(u) > 0 FROM AppUser u JOIN u.favoritedBlogs fb WHERE u.id = :userId AND fb.id = :blogId")
+    boolean existsByIdAndFavoritedBlogs_Id(@Param("userId") Long userId, @Param("blogId") Long blogId);
 }

@@ -20,17 +20,19 @@ public class DataInitializer {
 
     @EventListener(ApplicationReadyEvent.class)
     public void initializeData() {
-        if ("create-drop".equalsIgnoreCase(ddlAuto)) {
+        if ("create-drop".equalsIgnoreCase(ddlAuto) || "create".equalsIgnoreCase(ddlAuto)) {
             insertTestData();
         }
     }
 
     private void insertTestData() {
-        // Insert users
+        // Insert users into 'app_user' (renamed from 'userr')
         jdbcTemplate.execute("""
-            INSERT INTO userr (email, password)
+            INSERT INTO app_user (email, password, first_name, last_name)
             SELECT CONCAT('user', n, '@example.com') AS email, 
-                   CONCAT('password', n) AS password
+                   CONCAT('password', n) AS password,
+                   CONCAT('First', n) AS first_name,
+                   CONCAT('Last', n) AS last_name
             FROM generate_series(1, 100) AS n;
         """);
 
@@ -51,36 +53,35 @@ public class DataInitializer {
             FROM generate_series(1, 200) AS n;
         """);
 
-        // Insert comments
+        // Insert comments (Fixed column name: `app_user_id` instead of `user_id`)
         jdbcTemplate.execute("""
-            INSERT INTO comment (blog_id, content, name, user_id, timestamp)
-                                    SELECT blog_id,
-                                           CONCAT('This is a comment for blog ', blog_id) AS content,
-                                           CONCAT('User ', FLOOR(1 + (RANDOM() * 100))) AS name,
-                                           FLOOR(1 + (RANDOM() * 100)) AS user_id, -- Generate random user_id
-                                           NOW() AS timestamp -- Use the current timestamp
-                                    FROM (
-                                        SELECT id AS blog_id
-                                        FROM blog
-                                        ORDER BY RANDOM()
-                                        LIMIT 500
-                                    ) AS valid_blogs;
-                                    ;
+            INSERT INTO comment (blog_id, content, name, app_user_id, timestamp)
+            SELECT blog_id,
+                   CONCAT('This is a comment for blog ', blog_id) AS content,
+                   CONCAT('User ', FLOOR(1 + (RANDOM() * 100))) AS name,
+                   FLOOR(1 + (RANDOM() * 100)) AS app_user_id, 
+                   NOW() AS timestamp
+            FROM (
+                SELECT id AS blog_id
+                FROM blog
+                ORDER BY RANDOM()
+                LIMIT 500
+            ) AS valid_blogs;
         """);
 
-        // Insert favorites
+        // Insert favorites (handling ManyToMany relationship with correct column names)
         jdbcTemplate.execute("""
-            INSERT INTO favorite (user_id, blog_id)
+            INSERT INTO favorite (app_user_id, blog_id)
             SELECT user_id, blog_id
             FROM (
                 SELECT u.id AS user_id, b.id AS blog_id
-                FROM userr u
+                FROM app_user u
                 CROSS JOIN blog b
                 ORDER BY RANDOM()
                 LIMIT 500
             ) AS valid_data;
         """);
 
-        System.out.println("Test data inserted successfully.");
+        System.out.println("✅ Test data inserted successfully.");
     }
 }
