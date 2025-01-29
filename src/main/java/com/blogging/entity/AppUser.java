@@ -36,7 +36,7 @@ public class AppUser {
             name = "claps",
             joinColumns = @JoinColumn(name = "app_user_id"),
             inverseJoinColumns = @JoinColumn(name = "blog_id"))
-    private Set<Blog> likedBlogs = new HashSet<>();
+    private Set<Blog> clappedBlogs = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

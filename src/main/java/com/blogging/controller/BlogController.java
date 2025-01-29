@@ -77,15 +77,14 @@ public class BlogController {
     // ✅ Check if Clapped
     @GetMapping("/{blogId}/clapped/{userId}")
     public ResponseEntity<Boolean> isBlogClappedByUser(@PathVariable Long blogId, @PathVariable Long userId) {
-        boolean liked = blogService.isBlogClappedByUser(blogId, userId);
-        return ResponseEntity.ok(liked);
+        boolean hasClapped = blogService.isBlogClappedByUser(blogId, userId);
+        return ResponseEntity.ok(hasClapped);
     }
 
     // ✅ Clapped -  Unclapped
     @PostMapping("/{blogId}/clap/{userId}")
-    public ResponseEntity<String> toggleLike(@PathVariable Long blogId, @PathVariable Long userId) {
-        blogService.toggleLike(blogId, userId);
-        return ResponseEntity.ok("Like toggled successfully");
+    public ResponseEntity<String> clapUnclap(@PathVariable Long blogId, @PathVariable Long userId) {
+        return blogService.clapUnclap(blogId, userId);
     }
 
     // ✅ Claps Count

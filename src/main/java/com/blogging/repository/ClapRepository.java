@@ -4,11 +4,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class LikeRepository {
+public class ClapRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public LikeRepository(JdbcTemplate jdbcTemplate) {
+    public ClapRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
