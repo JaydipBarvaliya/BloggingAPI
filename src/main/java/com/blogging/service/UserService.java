@@ -1,7 +1,7 @@
 package com.blogging.service;
 
 import com.blogging.DTO.RegisterRequestDTO;
-import com.blogging.entity.Userr;
+import com.blogging.entity.AppUser;
 import com.blogging.exception.ResourceNotFoundException;
 import com.blogging.repository.UserRepository;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -22,12 +22,12 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Optional<Userr> getUserById(Long id) {
+    public Optional<AppUser> getUserById(Long id) {
         return userRepository.findById(id);
     }
 
-    public Userr updateUser(Long id, Userr updatedUser) {
-        Userr user = userRepository.findById(id)
+    public AppUser updateUser(Long id, AppUser updatedUser) {
+        AppUser user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
 
         user.setFirstName(updatedUser.getFirstName());
@@ -46,12 +46,12 @@ public class UserService {
             throw new IllegalArgumentException("Email address is already in use");
         }
 
-        Userr user = buildUserFromDTO(registerRequestDTO);
+        AppUser user = buildUserFromDTO(registerRequestDTO);
         userRepository.save(user);
     }
 
-    public Userr validateUser(String email, String password) {
-        Userr user = userRepository.findByEmail(email)
+    public AppUser validateUser(String email, String password) {
+        AppUser user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
@@ -66,15 +66,15 @@ public class UserService {
             throw new IllegalArgumentException("Password cannot be null or empty");
         }
 
-        Userr user = userRepository.findById(userId)
+        AppUser user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
 
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
 
-    private Userr buildUserFromDTO(RegisterRequestDTO registerRequestDTO) {
-        Userr user = new Userr();
+    private AppUser buildUserFromDTO(RegisterRequestDTO registerRequestDTO) {
+        AppUser user = new AppUser();
         user.setFirstName(registerRequestDTO.getFirstName());
         user.setLastName(registerRequestDTO.getLastName());
         user.setEmail(registerRequestDTO.getEmail());

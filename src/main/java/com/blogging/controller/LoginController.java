@@ -3,7 +3,7 @@ package com.blogging.controller;
 import com.blogging.DTO.LoginRequest;
 import com.blogging.DTO.RegisterRequestDTO;
 import com.blogging.config.JwtTokenUtil;
-import com.blogging.entity.Userr;
+import com.blogging.entity.AppUser;
 import com.blogging.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -37,7 +37,7 @@ public class LoginController {
     // Endpoint for user login
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody @Validated LoginRequest loginRequest) {
-        Userr user = userService.validateUser(loginRequest.getEmail(), loginRequest.getPassword());
+        AppUser user = userService.validateUser(loginRequest.getEmail(), loginRequest.getPassword());
 
         String token = jwtTokenUtil.generateToken(user.getEmail());
 
