@@ -1,12 +1,11 @@
 package com.blogging.controller;
 
 import com.blogging.DTO.PasswordUpdateRequestDTO;
+import com.blogging.DTO.UserDTO;
 import com.blogging.entity.AppUser;
 import com.blogging.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -19,11 +18,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getUserById(@PathVariable Long id) {
-        Optional<AppUser> userById = userService.getUserById(id);
-        return userById
-                .<ResponseEntity<Object>>map(ResponseEntity::ok) // Explicitly define the return type
-                .orElseGet(() -> ResponseEntity.status(404).body("User not found")); // Return 404 with a String message
+    public UserDTO getUserById(@PathVariable Long id) {
+         return userService.getUserById(id);
     }
 
     @PutMapping("/{id}")

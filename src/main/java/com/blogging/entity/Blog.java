@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,21 +28,25 @@ public class Blog {
     @Column(nullable = false)
     private String category;
 
-    @Column(nullable = false, length = 5000)
+    @Lob
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 
-    private String image;
+    @Lob
+    private byte[] image;
 
     private String summary;
 
     @Column(nullable = false)
     private String title;
 
-    @ManyToMany(mappedBy = "clappedBlogs")
+    private LocalDateTime publishedOn;
+
+    @ManyToMany(mappedBy = "clappedBlogs", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<AppUser> usersWhoClapped = new HashSet<>();
 
-    @ManyToMany(mappedBy = "favoritedBlogs", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "favoritedBlogs", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<AppUser> favoritedByUsers = new HashSet<>();
 

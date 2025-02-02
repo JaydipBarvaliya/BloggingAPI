@@ -2,7 +2,7 @@ package com.blogging.controller;
 
 import com.blogging.DTO.LoginRequest;
 import com.blogging.DTO.RegisterRequestDTO;
-import com.blogging.config.JwtTokenUtil;
+import com.blogging.config.BeanLoader;
 import com.blogging.entity.AppUser;
 import com.blogging.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +19,9 @@ import java.util.Map;
 public class LoginController {
 
     private final UserService userService;
-    private final  JwtTokenUtil jwtTokenUtil;
+    private final BeanLoader jwtTokenUtil;
 
-    public LoginController(UserService userService, JwtTokenUtil jwtTokenUtil) {
+    public LoginController(UserService userService, BeanLoader jwtTokenUtil) {
         this.userService = userService;
         this.jwtTokenUtil = jwtTokenUtil;
     }
