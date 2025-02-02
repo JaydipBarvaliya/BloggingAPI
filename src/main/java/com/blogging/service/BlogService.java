@@ -4,17 +4,12 @@ import com.blogging.DTO.BlogDTO;
 import com.blogging.entity.AppUser;
 import com.blogging.entity.Blog;
 import com.blogging.exception.ResourceNotFoundException;
-import com.blogging.repository.BlogRepository;
-import com.blogging.repository.ClapRepository;
-import com.blogging.repository.UserRepository;
+import com.blogging.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,15 +18,24 @@ public class BlogService {
     private final BlogRepository blogRepository;
     private final UserRepository userRepository;
     private final ClapRepository clapRepository;
+    private final CommentRepository commentRepository;
+    private final FavoriteRepository favoriteRepository;
 
 
-    public BlogService(BlogRepository blogRepository, UserRepository userRepository, ClapRepository clapRepository) {
+    public BlogService(BlogRepository blogRepository, UserRepository userRepository, ClapRepository clapRepository, CommentRepository commentRepository, FavoriteRepository favoriteRepository) {
         this.blogRepository = blogRepository;
         this.userRepository = userRepository;
         this.clapRepository = clapRepository;
+        this.commentRepository = commentRepository;
+        this.favoriteRepository = favoriteRepository;
     }
 
 
+    public Blog createBlog(Blog blog) {
+        return blogRepository.save(blog);
+    }
+
+    @Transactional
     public List<BlogDTO> getAllBlogs() {
         return blogRepository.findAll().stream()
                 .map(blog -> new BlogDTO(
@@ -49,6 +53,7 @@ public class BlogService {
     public BlogDTO getBlogById(Long id) {
         Blog blog = blogRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Blog with ID " + id + " not found"));
+
         return new BlogDTO(
                 blog.getId(),
                 blog.getTitle(),
@@ -123,6 +128,23 @@ public class BlogService {
     }
 
     public int getClapsCount(Long blogId) {
-        return clapRepository.countClapsByBlogId(blogId); // ✅ Call repository method
+        return clapRepository.countClapsByBlogId(blogId);
+    }
+
+    @Transactional
+    public void deleteBlogAndRelatedData(Long blogId) {
+
+        // Delete associated favorites
+        favoriteRepository.deleteByBlogId(blogId);
+
+        // Delete comments related to this blog
+        commentRepository.deleteByBlogId(blogId);
+
+        // Delete claps related to this blog
+        clapRepository.deleteByBlogId(blogId);
+
+        // Delete the blog
+        blogRepository.deleteById(blogId);
+
     }
 }

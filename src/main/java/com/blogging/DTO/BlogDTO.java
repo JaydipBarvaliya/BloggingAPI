@@ -12,7 +12,7 @@ public class BlogDTO {
     private String author;
     private String category;
     private String content;
-    private String image;
+    private byte[] image;
     private String summary;
     private String title;
 }

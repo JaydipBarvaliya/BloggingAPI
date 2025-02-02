@@ -29,6 +29,7 @@ public class AppUser {
     private String password;
 
     @OneToMany(mappedBy = "appUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private Set<Comment> comments = new HashSet<>();
 
     @ManyToMany

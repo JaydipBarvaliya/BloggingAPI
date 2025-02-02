@@ -1,9 +1,12 @@
 package com.blogging.service;
 
 import com.blogging.DTO.RegisterRequestDTO;
+import com.blogging.DTO.UserDTO;
 import com.blogging.entity.AppUser;
 import com.blogging.exception.ResourceNotFoundException;
+import com.blogging.exception.UserNotFoundException;
 import com.blogging.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,8 +25,18 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Optional<AppUser> getUserById(Long id) {
-        return userRepository.findById(id);
+    @Transactional
+    public UserDTO getUserById(Long userId) {
+        Optional<AppUser> appUser = userRepository.findById(userId);
+        AppUser user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        // Map the data into the UserProfileDTO
+        UserDTO userDTO = new UserDTO();
+        userDTO.setFirstName(user.getFirstName());
+        userDTO.setLastName(user.getLastName());
+        userDTO.setEmail(user.getEmail());
+
+        return userDTO;
     }
 
     public AppUser updateUser(Long id, AppUser updatedUser) {

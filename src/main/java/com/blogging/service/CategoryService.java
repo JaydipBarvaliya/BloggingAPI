@@ -3,6 +3,7 @@ package com.blogging.service;
 import com.blogging.entity.Blog;
 import com.blogging.exception.ResourceNotFoundException;
 import com.blogging.repository.BlogRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class CategoryService {
     }
 
     // Fetch blogs for a specific category
+    @Transactional
     public List<Blog> getBlogsByCategory(String category) {
         List<Blog> blogs = blogRepository.findByCategory(category);
         if (blogs.isEmpty()) {

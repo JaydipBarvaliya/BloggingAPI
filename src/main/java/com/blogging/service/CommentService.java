@@ -9,6 +9,7 @@ import com.blogging.exception.ResourceNotFoundException;
 import com.blogging.repository.BlogRepository;
 import com.blogging.repository.CommentRepository;
 import com.blogging.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -71,6 +72,7 @@ public class CommentService {
     }
 
 
+    @Transactional
     public List<CommentDTO> getCommentsByBlogId(Long blogId) {
         return commentRepository.findByBlogId(blogId).stream()
                 .map(comment -> new CommentDTO(
