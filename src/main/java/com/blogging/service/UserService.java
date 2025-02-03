@@ -36,6 +36,7 @@ public class UserService {
         return userDTO;
     }
 
+    @Transactional
     public AppUser updateUser(Long id, AppUser updatedUser) {
         AppUser user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + id));
