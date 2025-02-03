@@ -8,11 +8,11 @@ import lombok.Data;
 @AllArgsConstructor
 public class BlogDTO {
     private Long id;
-
-    private String author;
-    private String category;
+    private String slug;
+    private String title;
+    private String summary;
     private String content;
     private byte[] image;
-    private String summary;
-    private String title;
+    private String author;
+    private String category;
 }

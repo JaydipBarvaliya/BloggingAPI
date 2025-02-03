@@ -19,11 +19,7 @@ public class CategoryService {
 
     // Fetch all distinct categories
     public List<String> getAllCategories() {
-        List<String> categories = blogRepository.findDistinctCategories();
-        if (categories.isEmpty()) {
-            throw new ResourceNotFoundException("No categories found");
-        }
-        return categories;
+        return blogRepository.findDistinctCategories();
     }
 
     // Fetch blogs for a specific category

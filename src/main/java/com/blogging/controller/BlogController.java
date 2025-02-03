@@ -9,9 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +29,39 @@ public class BlogController {
     }
 
 
+    @PostMapping
+    public ResponseEntity<Blog> createBlog(
+            @RequestParam("author") String author,
+            @RequestParam("category") String category,
+            @RequestParam("content") String content,
+            @RequestParam("image") MultipartFile image,
+            @RequestParam("summary") String summary,
+            @RequestParam("title") String title) throws IOException, MissingServletRequestPartException {
+
+        Blog createdBlog =  blogService.createBlog(author, category, content, image, summary, title);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdBlog);
+    }
+
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Blog> updateBlog(
+            @PathVariable Long id,
+            @RequestParam String title,
+            @RequestParam String author,
+            @RequestParam String category,
+            @RequestParam String summary,
+            @RequestParam String content,
+            @RequestParam(required = false) MultipartFile image
+    ) {
+        try {
+            Blog updatedBlog = blogService.updateBlog(id, title, author, category, summary, content, image);
+            return ResponseEntity.ok(updatedBlog);
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(null); // Bad Request if any error
+        }
+    }
+
+
     @DeleteMapping("/{blogId}")
     public ResponseEntity<String> deleteBlog(@PathVariable Long blogId) {
         try {
@@ -41,33 +74,6 @@ public class BlogController {
 
 
 
-    @PostMapping
-    public ResponseEntity<Blog> createBlog(
-            @RequestParam("author") String author,
-            @RequestParam("category") String category,
-            @RequestParam("content") String content,
-            @RequestParam("image") MultipartFile image,
-            @RequestParam("summary") String summary,
-            @RequestParam("title") String title) throws IOException {
-
-        // Convert the uploaded image to byte[] and set it in the blog
-        byte[] imageBytes = image.getBytes();
-
-        // Map the parameters to the Blog entity
-        Blog blog = new Blog();
-        blog.setAuthor(author);
-        blog.setCategory(category);
-        blog.setImage(imageBytes);  // Set the image byte array
-        blog.setSummary(summary);
-        blog.setTitle(title);
-        blog.setContent(content); // HTML content from the editor
-        blog.setPublishedOn(LocalDateTime.now());
-
-        // Save the blog post
-        Blog createdBlog = blogService.createBlog(blog);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdBlog);
-    }
-
 
     @GetMapping
     public ResponseEntity<List<BlogDTO>> getAllBlogs() {
@@ -75,10 +81,14 @@ public class BlogController {
         return ResponseEntity.ok(blogDTOs);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<BlogDTO> getBlogById(@PathVariable Long id) {
-        BlogDTO blogDTO = blogService.getBlogById(id);
-        return ResponseEntity.ok(blogDTO);
+    @GetMapping("/{slug}")
+    public ResponseEntity<Blog> getBlogBySlug(@PathVariable String slug) {
+        Blog blog = blogService.findBySlug(slug);  // Find blog by slug
+        if (blog != null) {
+            return ResponseEntity.ok(blog);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);  // Return 404 if not found
+        }
     }
 
     @GetMapping("/{id}/comments")
@@ -92,6 +102,12 @@ public class BlogController {
         CommentDTO createdComment = commentService.addCommentToBlog(id, commentDTO);
         return ResponseEntity.ok(createdComment);
     }
+
+
+
+
+
+
 
 
 
@@ -138,10 +154,4 @@ public class BlogController {
         int clapsCount = blogService.getClapsCount(blogId);
         return ResponseEntity.ok(Collections.singletonMap("count", clapsCount)); // ✅ Return claps as JSON
     }
-
-
-
-
-
-
 }
