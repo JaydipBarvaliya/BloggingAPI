@@ -45,11 +45,11 @@ public class Blog {
 
     private LocalDateTime publishedOn;
 
-    @ManyToMany(mappedBy = "clappedBlogs", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "clappedBlogs", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JsonIgnore
     private Set<AppUser> usersWhoClapped = new HashSet<>();
 
-    @ManyToMany(mappedBy = "favoritedBlogs", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "favoritedBlogs", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JsonIgnore
     private Set<AppUser> favoritedByUsers = new HashSet<>();
 

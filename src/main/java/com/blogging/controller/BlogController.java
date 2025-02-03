@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -36,7 +35,7 @@ public class BlogController {
             @RequestParam("content") String content,
             @RequestParam("image") MultipartFile image,
             @RequestParam("summary") String summary,
-            @RequestParam("title") String title) throws IOException, MissingServletRequestPartException {
+            @RequestParam("title") String title) throws IOException {
 
         Blog createdBlog =  blogService.createBlog(author, category, content, image, summary, title);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdBlog);

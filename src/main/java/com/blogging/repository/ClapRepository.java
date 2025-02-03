@@ -14,7 +14,8 @@ public class ClapRepository  {
 
     public int countClapsByBlogId(Long blogId) {
         String sql = "SELECT COUNT(*) FROM claps WHERE blog_id = ?";
-        return jdbcTemplate.queryForObject(sql, Integer.class, blogId); // ✅ Fetch total claps
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, blogId); // ✅ Fetch total claps
+        return (count != null) ? count : 0;
     }
 
 
