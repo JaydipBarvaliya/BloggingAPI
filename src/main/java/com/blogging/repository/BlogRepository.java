@@ -14,4 +14,6 @@ public interface BlogRepository extends JpaRepository<Blog, Long> {
 
     @Query("SELECT DISTINCT b.category FROM Blog b")
     List<String> findDistinctCategories();
+
+    Blog findBySlug(String slug);
 }

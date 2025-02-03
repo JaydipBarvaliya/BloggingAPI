@@ -3,13 +3,20 @@ package com.blogging.service;
 import com.blogging.DTO.BlogDTO;
 import com.blogging.entity.AppUser;
 import com.blogging.entity.Blog;
-import com.blogging.exception.ResourceNotFoundException;
+import com.blogging.exception.BlogNotFoundException;
+import com.blogging.exception.BlogSlugAlreadyExistsException;
 import com.blogging.repository.*;
 import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,15 +38,81 @@ public class BlogService {
     }
 
 
-    public Blog createBlog(Blog blog) {
+    // Method to generate slug from title
+    public String generateSlug(String title) {
+        String slug = title.trim().toLowerCase().replaceAll("[^a-z0-9\\s-]", "");
+        slug = slug.replaceAll("[\\s-]+", "-"); // Replace multiple spaces or hyphens with a single hyphen
+        slug = slug.replaceAll("^-|-$", ""); // Remove leading and trailing hyphens
+        return slug;
+    }
+
+    @Transactional
+    public Blog createBlog(String author, String category, String content, MultipartFile image, String summary, String title) throws IOException {
+
+        // Generate slug before saving
+        String slug = generateSlug(title);
+
+        // Check for duplicate slugs
+        if (blogRepository.findBySlug(slug) != null) {
+            throw new BlogSlugAlreadyExistsException("Slug already exists!");
+        }
+
+        // Convert the uploaded image to byte[] and set it in the blog
+        byte[] imageBytes = image.getBytes();
+
+        // Map the parameters to the Blog entity
+        Blog blog = new Blog();
+        blog.setAuthor(author);
+        blog.setCategory(category);
+        blog.setImage(imageBytes);  // Set the image byte array
+        blog.setSummary(summary);
+        blog.setTitle(title);
+        blog.setContent(content); // HTML content from the editor
+        blog.setPublishedOn(LocalDateTime.now());
+        blog.setSlug(slug);
         return blogRepository.save(blog);
     }
+
+
+    @Transactional
+    public Blog updateBlog(Long id, String title, String author, String category, String summary, String content, MultipartFile image) throws IOException {
+        // Check if the blog exists
+        Blog existingBlog = blogRepository.findById(id).orElseThrow(() -> new BlogNotFoundException("Blog not found"));
+
+        // Generate slug for the updated title
+        String slug = generateSlug(title);
+
+        // If the slug has changed, check for duplicate slugs
+        if (!existingBlog.getSlug().equals(slug) && blogRepository.findBySlug(slug) != null) {
+            throw new BlogSlugAlreadyExistsException("Slug already exists!");
+        }
+
+        // Update blog fields
+        existingBlog.setTitle(title);
+        existingBlog.setContent(content);
+        existingBlog.setCategory(category);
+        existingBlog.setSummary(summary);
+        existingBlog.setAuthor(author);
+        existingBlog.setSlug(slug);
+
+        // Handle image update if new image is provided
+        if (image != null && !image.isEmpty()) {
+            byte[] imageBytes = image.getBytes();
+            existingBlog.setImage(imageBytes);
+        }
+
+        // Save the updated blog
+        return blogRepository.save(existingBlog);
+    }
+
+
 
     @Transactional
     public List<BlogDTO> getAllBlogs() {
         return blogRepository.findAll().stream()
                 .map(blog -> new BlogDTO(
                         blog.getId(),
+                        blog.getSlug(),
                         blog.getTitle(),
                         blog.getSummary(),
                         blog.getContent(),
@@ -48,21 +121,6 @@ public class BlogService {
                         blog.getCategory()
                 ))
                 .collect(Collectors.toList());
-    }
-
-    public BlogDTO getBlogById(Long id) {
-        Blog blog = blogRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Blog with ID " + id + " not found"));
-
-        return new BlogDTO(
-                blog.getId(),
-                blog.getTitle(),
-                blog.getSummary(),
-                blog.getContent(),
-                blog.getImage(),
-                blog.getAuthor(),
-                blog.getCategory()
-        );
     }
 
     // ✅ Toggle Clap
@@ -147,4 +205,10 @@ public class BlogService {
         blogRepository.deleteById(blogId);
 
     }
+
+    @Transactional
+    public Blog findBySlug(String slug) {
+        return blogRepository.findBySlug(slug);
+    }
+
 }
