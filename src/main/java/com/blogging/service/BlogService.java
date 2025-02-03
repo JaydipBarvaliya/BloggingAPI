@@ -64,10 +64,10 @@ public class BlogService {
         Blog blog = new Blog();
         blog.setAuthor(author);
         blog.setCategory(category);
-        blog.setImage(imageBytes);  // Set the image byte array
+        blog.setImage(imageBytes);
         blog.setSummary(summary);
         blog.setTitle(title);
-        blog.setContent(content); // HTML content from the editor
+        blog.setContent(content);
         blog.setPublishedOn(LocalDateTime.now());
         blog.setSlug(slug);
         return blogRepository.save(blog);
