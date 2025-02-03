@@ -38,6 +38,7 @@ public class Blog {
     @Lob
     private byte[] image;
 
+    @Lob
     private String summary;
 
     @Column(nullable = false)

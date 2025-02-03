@@ -72,8 +72,6 @@ public class BlogController {
     }
 
 
-
-
     @GetMapping
     public ResponseEntity<List<BlogDTO>> getAllBlogs() {
         List<BlogDTO> blogDTOs = blogService.getAllBlogs();
@@ -81,12 +79,12 @@ public class BlogController {
     }
 
     @GetMapping("/{slug}")
-    public ResponseEntity<Blog> getBlogBySlug(@PathVariable String slug) {
+    public ResponseEntity<Object> getBlogBySlug(@PathVariable String slug) {
         Blog blog = blogService.findBySlug(slug);  // Find blog by slug
         if (blog != null) {
             return ResponseEntity.ok(blog);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);  // Return 404 if not found
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Slug not found for requested URL");  // Return 404 if not found
         }
     }
 
