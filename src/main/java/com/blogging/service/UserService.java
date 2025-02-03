@@ -12,8 +12,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class UserService {
 
@@ -27,7 +25,6 @@ public class UserService {
 
     @Transactional
     public UserDTO getUserById(Long userId) {
-        Optional<AppUser> appUser = userRepository.findById(userId);
         AppUser user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
 
         // Map the data into the UserProfileDTO
