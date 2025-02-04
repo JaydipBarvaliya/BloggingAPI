@@ -39,11 +39,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 String email = jwtUtil.extractUsername(token); // Assuming JWT contains username (email)
                 String role = jwtUtil.extractRole(token); // Extract the role
 
-                if (email != null && role != null && jwtUtil.validateToken(token, email)) {
+                if (role != null) {
+                    role = role.replaceAll("[\\[\\]]", "");
+                }
+
+                if (email != null && jwtUtil.validateToken(token, email)) {
                     // Create an authentication object using the username and role
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            email, null, List.of(new SimpleGrantedAuthority(role))
+                            email, null, List.of(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
                     );
+
+                    System.out.println("------------------------Extracted Role: " + role);
                     // Set authentication in the Security Context
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }

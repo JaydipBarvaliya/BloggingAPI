@@ -7,6 +7,7 @@ import com.blogging.service.BlogService;
 import com.blogging.service.CommentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,7 +28,7 @@ public class BlogController {
         this.commentService = commentService;
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Blog> createBlog(
             @RequestParam("author") String author,
@@ -41,7 +42,7 @@ public class BlogController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdBlog);
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<Blog> updateBlog(
             @PathVariable Long id,
@@ -60,7 +61,7 @@ public class BlogController {
         }
     }
 
-
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{blogId}")
     public ResponseEntity<String> deleteBlog(@PathVariable Long blogId) {
         try {
@@ -71,13 +72,14 @@ public class BlogController {
         }
     }
 
-
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping
     public ResponseEntity<List<BlogDTO>> getAllBlogs() {
         List<BlogDTO> blogDTOs = blogService.getAllBlogs();
         return ResponseEntity.ok(blogDTOs);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/{slug}")
     public ResponseEntity<Object> getBlogBySlug(@PathVariable String slug) {
         Blog blog = blogService.findBySlug(slug);  // Find blog by slug
@@ -88,12 +90,14 @@ public class BlogController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/{id}/comments")
     public ResponseEntity<List<CommentDTO>> getCommentsByBlogId(@PathVariable Long id) {
         List<CommentDTO> commentDTOs = commentService.getCommentsByBlogId(id);
         return ResponseEntity.ok(commentDTOs);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @PostMapping("/{id}/comments")
     public ResponseEntity<CommentDTO> addCommentToBlog(@PathVariable Long id, @RequestBody CommentDTO commentDTO) {
         CommentDTO createdComment = commentService.addCommentToBlog(id, commentDTO);
@@ -111,6 +115,7 @@ public class BlogController {
 
 
     // ✅ Toggle Favorite
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @PostMapping("/{blogId}/favorite/{userId}")
     public ResponseEntity<String> toggleFavorite(@PathVariable Long blogId, @PathVariable Long userId) {
         blogService.toggleFavorite(blogId, userId);
@@ -118,12 +123,14 @@ public class BlogController {
     }
 
     // ✅ Check if Favorited
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/{blogId}/favorited/{userId}")
     public ResponseEntity<Boolean> isBlogFavoritedByUser(@PathVariable Long blogId, @PathVariable Long userId) {
         boolean favorited = blogService.isBlogFavoritedByUser(blogId, userId);
         return ResponseEntity.ok(favorited);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/favorited/{userId}")
     public ResponseEntity<List<Blog>> getUserFavorites(@PathVariable Long userId) {
         List<Blog> favoriteBlogs = blogService.getFavoriteBlogsByUser(userId);
@@ -133,6 +140,7 @@ public class BlogController {
 
 
     // ✅ Check if Clapped
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/{blogId}/clapped/{userId}")
     public ResponseEntity<Boolean> isBlogClappedByUser(@PathVariable Long blogId, @PathVariable Long userId) {
         boolean hasClapped = blogService.isBlogClappedByUser(blogId, userId);
@@ -140,12 +148,14 @@ public class BlogController {
     }
 
     // ✅ Clapped -  Unclapped
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @PostMapping("/{blogId}/clap/{userId}")
     public ResponseEntity<String> clapUnclap(@PathVariable Long blogId, @PathVariable Long userId) {
         return blogService.clapUnclap(blogId, userId);
     }
 
     // ✅ Claps Count
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/{blogId}/claps-count")
     public ResponseEntity<Map<String, Integer>> getBlogClapsCount(@PathVariable Long blogId) {
         int clapsCount = blogService.getClapsCount(blogId);

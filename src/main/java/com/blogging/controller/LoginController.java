@@ -33,8 +33,8 @@ public class LoginController {
 
     @PostMapping("/login")
     public String login(@RequestBody LoginRequest loginRequest) {
-        AppUser user = userService.findByEmail(loginRequest.getEmail());
-        return jwtUtil.generateToken(user.getEmail(), user.getRoles().toString(), user.getFirstName(), user.getLastName(), user.getAuthType(), user.getId()); // Send token to the client
+        AppUser user = userService.findByEmail(loginRequest.getEmail().trim().toLowerCase());
+        return jwtUtil.generateToken(user.getEmail().trim().toLowerCase(), user.getRoles().toString(), user.getFirstName(), user.getLastName(), user.getAuthType(), user.getId()); // Send token to the client
     }
 
 

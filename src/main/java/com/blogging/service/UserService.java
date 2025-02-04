@@ -45,7 +45,7 @@ public class UserService {
 
         user.setFirstName(updatedUser.getFirstName());
         user.setLastName(updatedUser.getLastName());
-        user.setEmail(updatedUser.getEmail());
+        user.setEmail(updatedUser.getEmail().trim().toLowerCase());
 
         if (isValidPassword(updatedUser.getPassword())) {
             user.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
@@ -55,7 +55,7 @@ public class UserService {
     }
 
     public void registerUser(RegisterRequestDTO registerRequestDTO) {
-        if (userRepository.existsByEmail(registerRequestDTO.getEmail())) {
+        if (userRepository.existsByEmail(registerRequestDTO.getEmail().trim().toLowerCase())) {
             throw new IllegalArgumentException("Email address is already in use");
         }
 
@@ -79,7 +79,7 @@ public class UserService {
         AppUser user = new AppUser();
         user.setFirstName(registerRequestDTO.getFirstName());
         user.setLastName(registerRequestDTO.getLastName());
-        user.setEmail(registerRequestDTO.getEmail());
+        user.setEmail(registerRequestDTO.getEmail().trim().toLowerCase());
         user.setRoles(Set.of(Role.USER.name()));
         user.setPassword(passwordEncoder.encode(registerRequestDTO.getPassword()));
         user.setAuthType(registerRequestDTO.getAuthType());// Hash the password

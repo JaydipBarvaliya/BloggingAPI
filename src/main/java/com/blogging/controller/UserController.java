@@ -5,6 +5,7 @@ import com.blogging.DTO.UserDTO;
 import com.blogging.entity.AppUser;
 import com.blogging.service.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,6 +23,7 @@ public class UserController {
          return userService.getUserById(id);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody AppUser updatedUser) {
         try {
@@ -34,6 +36,7 @@ public class UserController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @PutMapping("/{id}/password")
     public ResponseEntity<?> updatePassword(@PathVariable Long id, @RequestBody PasswordUpdateRequestDTO request) {
         try {

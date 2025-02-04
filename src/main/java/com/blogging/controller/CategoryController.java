@@ -3,6 +3,7 @@ package com.blogging.controller;
 import com.blogging.entity.Blog;
 import com.blogging.service.CategoryService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,13 +21,14 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping
     public ResponseEntity<List<String>> getCategories() {
         List<String> categories = categoryService.getAllCategories();
         return ResponseEntity.ok(categories);
     }
 
-    // Fetch blogs by category
+    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/{category}/blogs")
     public ResponseEntity<List<Blog>> getBlogsByCategory(@PathVariable String category) {
         List<Blog> blogs = categoryService.getBlogsByCategory(category);
