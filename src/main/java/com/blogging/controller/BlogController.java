@@ -1,10 +1,9 @@
 package com.blogging.controller;
 
 import com.blogging.DTO.BlogDTO;
-import com.blogging.DTO.CommentDTO;
 import com.blogging.entity.Blog;
 import com.blogging.service.BlogService;
-import com.blogging.service.CommentService;
+import com.blogging.service.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,20 +11,19 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/blogs")
 public class BlogController {
 
     private final BlogService blogService;
-    private final CommentService commentService;
+    private final CategoryService categoryService;
 
-    public BlogController(BlogService blogService, CommentService commentService) {
+
+    public BlogController(BlogService blogService, CategoryService categoryService) {
         this.blogService = blogService;
-        this.commentService = commentService;
+        this.categoryService = categoryService;
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -91,74 +89,10 @@ public class BlogController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    @GetMapping("/{id}/comments")
-    public ResponseEntity<List<CommentDTO>> getCommentsByBlogId(@PathVariable Long id) {
-        List<CommentDTO> commentDTOs = commentService.getCommentsByBlogId(id);
-        return ResponseEntity.ok(commentDTOs);
+    @GetMapping("/{category}/blogs")
+    public ResponseEntity<List<Blog>> getBlogsByCategory(@PathVariable String category) {
+        List<Blog> blogs = categoryService.getBlogsByCategory(category);
+        return ResponseEntity.ok(blogs);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    @PostMapping("/{id}/comments")
-    public ResponseEntity<CommentDTO> addCommentToBlog(@PathVariable Long id, @RequestBody CommentDTO commentDTO) {
-        CommentDTO createdComment = commentService.addCommentToBlog(id, commentDTO);
-        return ResponseEntity.ok(createdComment);
-    }
-
-
-
-
-
-
-
-
-
-
-
-    // ✅ Toggle Favorite
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    @PostMapping("/{blogId}/favorite/{userId}")
-    public ResponseEntity<String> toggleFavorite(@PathVariable Long blogId, @PathVariable Long userId) {
-        blogService.toggleFavorite(blogId, userId);
-        return ResponseEntity.ok("Favorite toggled successfully");
-    }
-
-    // ✅ Check if Favorited
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    @GetMapping("/{blogId}/favorited/{userId}")
-    public ResponseEntity<Boolean> isBlogFavoritedByUser(@PathVariable Long blogId, @PathVariable Long userId) {
-        boolean favorited = blogService.isBlogFavoritedByUser(blogId, userId);
-        return ResponseEntity.ok(favorited);
-    }
-
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    @GetMapping("/favorited/{userId}")
-    public ResponseEntity<List<Blog>> getUserFavorites(@PathVariable Long userId) {
-        List<Blog> favoriteBlogs = blogService.getFavoriteBlogsByUser(userId);
-        return ResponseEntity.ok(favoriteBlogs);
-    }
-
-
-
-    // ✅ Check if Clapped
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    @GetMapping("/{blogId}/clapped/{userId}")
-    public ResponseEntity<Boolean> isBlogClappedByUser(@PathVariable Long blogId, @PathVariable Long userId) {
-        boolean hasClapped = blogService.isBlogClappedByUser(blogId, userId);
-        return ResponseEntity.ok(hasClapped);
-    }
-
-    // ✅ Clapped -  Unclapped
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    @PostMapping("/{blogId}/clap/{userId}")
-    public ResponseEntity<String> clapUnclap(@PathVariable Long blogId, @PathVariable Long userId) {
-        return blogService.clapUnclap(blogId, userId);
-    }
-
-    // ✅ Claps Count
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    @GetMapping("/{blogId}/claps-count")
-    public ResponseEntity<Map<String, Integer>> getBlogClapsCount(@PathVariable Long blogId) {
-        int clapsCount = blogService.getClapsCount(blogId);
-        return ResponseEntity.ok(Collections.singletonMap("count", clapsCount)); // ✅ Return claps as JSON
-    }
 }

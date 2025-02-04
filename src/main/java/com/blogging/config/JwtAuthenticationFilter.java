@@ -49,7 +49,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             email, null, List.of(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
                     );
 
-                    System.out.println("------------------------Extracted Role: " + role);
                     // Set authentication in the Security Context
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
