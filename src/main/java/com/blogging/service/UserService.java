@@ -3,14 +3,15 @@ package com.blogging.service;
 import com.blogging.DTO.RegisterRequestDTO;
 import com.blogging.DTO.UserDTO;
 import com.blogging.entity.AppUser;
+import com.blogging.enums.Role;
 import com.blogging.exception.ResourceNotFoundException;
 import com.blogging.exception.UserNotFoundException;
 import com.blogging.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 @Service
 public class UserService {
@@ -32,6 +33,7 @@ public class UserService {
         userDTO.setFirstName(user.getFirstName());
         userDTO.setLastName(user.getLastName());
         userDTO.setEmail(user.getEmail());
+        userDTO.setAuthType(user.getAuthType());
 
         return userDTO;
     }
@@ -61,17 +63,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public AppUser validateUser(String email, String password) {
-        AppUser user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
-
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new BadCredentialsException("Invalid password");
-        }
-
-        return user;
-    }
-
     public void updateUserPassword(Long userId, String newPassword) {
         if (!isValidPassword(newPassword)) {
             throw new IllegalArgumentException("Password cannot be null or empty");
@@ -89,11 +80,17 @@ public class UserService {
         user.setFirstName(registerRequestDTO.getFirstName());
         user.setLastName(registerRequestDTO.getLastName());
         user.setEmail(registerRequestDTO.getEmail());
-        user.setPassword(passwordEncoder.encode(registerRequestDTO.getPassword())); // Hash the password
+        user.setRoles(Set.of(Role.USER.name()));
+        user.setPassword(passwordEncoder.encode(registerRequestDTO.getPassword()));
+        user.setAuthType(registerRequestDTO.getAuthType());// Hash the password
         return user;
     }
 
     private boolean isValidPassword(String password) {
         return password != null && !password.trim().isEmpty();
+    }
+
+    public AppUser findByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
     }
 }

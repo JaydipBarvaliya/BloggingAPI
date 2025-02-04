@@ -28,6 +28,13 @@ public class AppUser {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private String authType;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Column(nullable = false)
+    private Set<String> roles;
+
     @OneToMany(mappedBy = "appUser", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private Set<Comment> comments = new HashSet<>();

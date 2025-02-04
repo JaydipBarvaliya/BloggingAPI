@@ -1,6 +1,5 @@
 package com.blogging.DTO;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -8,9 +7,14 @@ import lombok.Data;
 @AllArgsConstructor
 public class LoginRequest {
 
-    @NotBlank
     private String email;
 
-    @NotBlank
     private String password;
+
+    private String firstName;
+
+    private String lastName;
+
+    private String authType;
+
 }

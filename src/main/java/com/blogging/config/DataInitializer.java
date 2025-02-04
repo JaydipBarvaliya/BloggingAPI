@@ -23,17 +23,29 @@ public class DataInitializer {
     public void initializeData() {
         if ("create-drop".equalsIgnoreCase(ddlAuto) || "create".equalsIgnoreCase(ddlAuto)) {
 
-            String insertUserQuery = "INSERT INTO app_user (email, password, first_name, last_name) VALUES (?, ?, ?, ?)";
+            // Insert into app_user table (without roles)
+            String insertUserQuery = "INSERT INTO app_user (email, password, first_name, last_name, auth_type) VALUES (?, ?, ?, ?, ?)";
             jdbcTemplate.update(insertUserQuery,
                     "jaydipbarvaliya55@gmail.com",
                     new BCryptPasswordEncoder().encode("James@111"),
                     "Jaydip",
-                    "Barvaliya"
+                    "Barvaliya",
+                    "MANUAL"
             );
 
+            // Fetch the id of the newly inserted user based on the email
+            String getUserIdQuery = "SELECT id FROM app_user WHERE email = ?";
+            Long userId = jdbcTemplate.queryForObject(getUserIdQuery, Long.class, "jaydipbarvaliya55@gmail.com");
 
-//            insertTestData();
+            // Insert the user-role mapping into app_user_roles table (many-to-many relationship)
+            String insertUserRoleQuery = "INSERT INTO app_user_roles (app_user_id, roles) VALUES (?, ?)";
+            jdbcTemplate.update(insertUserRoleQuery,
+                    userId,  // User's id obtained from the previous query
+                    "ADMIN"  // Role to be inserted
+            );
+
         }
+
     }
 }
 

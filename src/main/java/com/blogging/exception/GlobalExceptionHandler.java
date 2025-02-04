@@ -60,8 +60,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BlogNotFoundException.class)
-    public ResponseEntity<String> handleBlogNotFoundException(BlogNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    public ResponseEntity<Map<String, String>> handleBlogNotFoundException(BlogNotFoundException ex) {
+        Map<String, String> response = new HashMap<>();
+        response.put("message", ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
 
@@ -82,12 +84,16 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(BlogSlugAlreadyExistsException.class)
-    public ResponseEntity<String> handleBlogSlugAlreadyExistsException(BlogSlugAlreadyExistsException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Map<String, String>> handleBlogSlugAlreadyExistsException(BlogSlugAlreadyExistsException ex) {
+        Map<String, String> response = new HashMap<>();
+        response.put("message", ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MissingServletRequestPartException .class)
-    public ResponseEntity<String> handleMissingBlogImageException(MissingServletRequestPartException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Map<String, String>> handleMissingBlogImageException(MissingServletRequestPartException ex) {
+        Map<String, String> response = new HashMap<>();
+        response.put("message", ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }

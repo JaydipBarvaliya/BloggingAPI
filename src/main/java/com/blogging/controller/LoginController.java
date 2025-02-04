@@ -2,10 +2,13 @@ package com.blogging.controller;
 
 import com.blogging.DTO.LoginRequest;
 import com.blogging.DTO.RegisterRequestDTO;
-import com.blogging.config.BeanLoader;
+import com.blogging.config.JwtUtil;
 import com.blogging.entity.AppUser;
+import com.blogging.enums.Role;
+import com.blogging.repository.UserRepository;
 import com.blogging.service.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,17 +16,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/auth")
 public class LoginController {
 
     private final UserService userService;
-    private final BeanLoader jwtTokenUtil;
+    private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
 
-    public LoginController(UserService userService, BeanLoader jwtTokenUtil) {
+    public LoginController(UserService userService, JwtUtil jwtUtil, UserRepository userRepository) {
         this.userService = userService;
-        this.jwtTokenUtil = jwtTokenUtil;
+        this.jwtUtil = jwtUtil;
+        this.userRepository = userRepository;
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestBody LoginRequest loginRequest) {
+        AppUser user = userService.findByEmail(loginRequest.getEmail());
+        return jwtUtil.generateToken(user.getEmail(), user.getRoles().toString(), user.getFirstName(), user.getLastName(), user.getAuthType(), user.getId()); // Send token to the client
     }
 
 
@@ -34,19 +46,40 @@ public class LoginController {
         return ResponseEntity.ok("User registered successfully");
     }
 
-    // Endpoint for user login
-    @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody @Validated LoginRequest loginRequest) {
-        AppUser user = userService.validateUser(loginRequest.getEmail(), loginRequest.getPassword());
+    @PostMapping("/loginViaGoogle")
+    public ResponseEntity<?> loginViaGoogle(@RequestBody LoginRequest loginRequest) {
 
-        String token = jwtTokenUtil.generateToken(user.getEmail());
+        AppUser user = userService.findByEmail(loginRequest.getEmail());
 
-        // Returning structured response
+        if (user == null) {
+            AppUser newUser = new AppUser();
+            newUser.setFirstName(loginRequest.getFirstName());
+            newUser.setLastName(loginRequest.getLastName());
+            newUser.setEmail(loginRequest.getEmail());
+            newUser.setPassword(new BCryptPasswordEncoder().encode("Google"));
+            newUser.setAuthType(loginRequest.getAuthType());
+            newUser.setRoles(Set.of(Role.USER.name()));
+
+            user = userRepository.save(newUser);
+        }
+
+        String token = jwtUtil.generateToken(
+                user.getEmail(),
+                user.getRoles().toString(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getAuthType(),
+                user.getId()
+        );
+
         return ResponseEntity.ok(Map.of(
                 "token", token,
                 "userId", user.getId(),
                 "firstName", user.getFirstName(),
-                "lastName", user.getLastName()
+                "lastName", user.getLastName(),
+                "role", user.getRoles()
         ));
+
     }
+
 }
