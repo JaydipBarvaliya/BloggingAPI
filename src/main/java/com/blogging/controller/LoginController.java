@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -47,7 +46,7 @@ public class LoginController {
     }
 
     @PostMapping("/loginViaGoogle")
-    public ResponseEntity<?> loginViaGoogle(@RequestBody LoginRequest loginRequest) {
+    public String loginViaGoogle(@RequestBody LoginRequest loginRequest) {
 
         AppUser user = userService.findByEmail(loginRequest.getEmail());
 
@@ -56,14 +55,14 @@ public class LoginController {
             newUser.setFirstName(loginRequest.getFirstName());
             newUser.setLastName(loginRequest.getLastName());
             newUser.setEmail(loginRequest.getEmail());
-            newUser.setPassword(new BCryptPasswordEncoder().encode("Google"));
+            newUser.setPassword(new BCryptPasswordEncoder().encode("James@111"));
             newUser.setAuthType(loginRequest.getAuthType());
             newUser.setRoles(Set.of(Role.USER.name()));
 
             user = userRepository.save(newUser);
         }
 
-        String token = jwtUtil.generateToken(
+        return jwtUtil.generateToken(
                 user.getEmail(),
                 user.getRoles().toString(),
                 user.getFirstName(),
@@ -71,14 +70,6 @@ public class LoginController {
                 user.getAuthType(),
                 user.getId()
         );
-
-        return ResponseEntity.ok(Map.of(
-                "token", token,
-                "userId", user.getId(),
-                "firstName", user.getFirstName(),
-                "lastName", user.getLastName(),
-                "role", user.getRoles()
-        ));
 
     }
 

@@ -30,7 +30,7 @@ public class DataInitializer {
                     new BCryptPasswordEncoder().encode("James@111"),
                     "Jaydip",
                     "Barvaliya",
-                    "MANUAL"
+                    "Manual"
             );
 
             // Fetch the id of the newly inserted user based on the email

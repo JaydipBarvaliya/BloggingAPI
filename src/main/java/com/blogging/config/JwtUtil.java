@@ -28,6 +28,7 @@ public class JwtUtil {
     public String generateToken(String email, String role, String firstName, String lastName, String authType, Long userId) {
         return Jwts.builder()
                 .setSubject(email)
+                .claim("email", email)
                 .claim("role", role)
                 .claim("firstName", firstName)
                 .claim("lastName", lastName)
