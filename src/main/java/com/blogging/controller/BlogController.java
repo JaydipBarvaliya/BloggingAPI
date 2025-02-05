@@ -26,6 +26,28 @@ public class BlogController {
         this.categoryService = categoryService;
     }
 
+    @GetMapping
+    public ResponseEntity<List<BlogDTO>> getAllBlogs() {
+        List<BlogDTO> blogDTOs = blogService.getAllBlogs();
+        return ResponseEntity.ok(blogDTOs);
+    }
+
+    @GetMapping("/{slug}")
+    public ResponseEntity<Object> getBlogBySlug(@PathVariable String slug) {
+        Blog blog = blogService.findBySlug(slug);  // Find blog by slug
+        if (blog != null) {
+            return ResponseEntity.ok(blog);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Slug not found for requested URL");  // Return 404 if not found
+        }
+    }
+
+    @GetMapping("/{category}/blogs")
+    public ResponseEntity<List<Blog>> getBlogsByCategory(@PathVariable String category) {
+        List<Blog> blogs = categoryService.getBlogsByCategory(category);
+        return ResponseEntity.ok(blogs);
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Blog> createBlog(
@@ -70,29 +92,5 @@ public class BlogController {
         }
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    @GetMapping
-    public ResponseEntity<List<BlogDTO>> getAllBlogs() {
-        List<BlogDTO> blogDTOs = blogService.getAllBlogs();
-        return ResponseEntity.ok(blogDTOs);
-    }
-
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    @GetMapping("/{slug}")
-    public ResponseEntity<Object> getBlogBySlug(@PathVariable String slug) {
-        Blog blog = blogService.findBySlug(slug);  // Find blog by slug
-        if (blog != null) {
-            return ResponseEntity.ok(blog);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Slug not found for requested URL");  // Return 404 if not found
-        }
-    }
-
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
-    @GetMapping("/{category}/blogs")
-    public ResponseEntity<List<Blog>> getBlogsByCategory(@PathVariable String category) {
-        List<Blog> blogs = categoryService.getBlogsByCategory(category);
-        return ResponseEntity.ok(blogs);
-    }
 
 }

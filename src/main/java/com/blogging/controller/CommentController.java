@@ -26,7 +26,6 @@ public class CommentController {
         return ResponseEntity.ok("Comment posted successfully");
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/{blogId}")
     public ResponseEntity<List<CommentDTO>> getCommentsByBlogId(@PathVariable Long blogId) {
         return ResponseEntity.ok(commentService.getCommentsByBlogId(blogId));

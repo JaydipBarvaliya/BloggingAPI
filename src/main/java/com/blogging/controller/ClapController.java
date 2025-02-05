@@ -34,7 +34,6 @@ public class ClapController {
     }
 
     // ✅ Claps Count
-    @PreAuthorize("hasAnyRole('ADMIN','USER')")
     @GetMapping("/{blogId}/claps-count")
     public ResponseEntity<Map<String, Integer>> getBlogClapsCount(@PathVariable Long blogId) {
         int clapsCount = blogService.getClapsCount(blogId);

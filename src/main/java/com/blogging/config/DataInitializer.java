@@ -44,6 +44,28 @@ public class DataInitializer {
                     "ADMIN"  // Role to be inserted
             );
 
+            // Insert blogs
+//            jdbcTemplate.execute("""
+//    INSERT INTO blog (slug, author, category, content, image, summary, title, published_on)
+//    SELECT LOWER(REPLACE(CONCAT('Blog Title ', n), ' ', '-')) AS slug,
+//           CONCAT('Author ', n) AS author,
+//           CASE
+//               WHEN n % 5 = 0 THEN 'Technology'
+//               WHEN n % 5 = 1 THEN 'Finance'
+//               WHEN n % 5 = 2 THEN 'Health'
+//               WHEN n % 5 = 3 THEN 'Lifestyle'
+//               ELSE 'Education'
+//           END AS category,
+//           CONCAT('This is the content of blog ', n) AS content,
+//           CONCAT('https://picsum.photos/800/400?random=', n) AS image,
+//           CONCAT('This is a summary for blog ', n) AS summary,
+//           CONCAT('Blog Title ', n) AS title,
+//           NOW() AS published_on
+//    FROM generate_series(1, 200) AS n;
+//""");
+
+
+
         }
 
     }
@@ -60,22 +82,7 @@ public class DataInitializer {
 //            FROM generate_series(1, 100) AS n;
 //        """);
 
-        // Insert blogs
-//        jdbcTemplate.execute("""
-//            INSERT INTO blog (author, category, content, image, summary, title)
-//            SELECT CONCAT('Author ', n) AS author,
-//                   CASE WHEN n % 5 = 0 THEN 'Technology'
-//                        WHEN n % 5 = 1 THEN 'Finance'
-//                        WHEN n % 5 = 2 THEN 'Health'
-//                        WHEN n % 5 = 3 THEN 'Lifestyle'
-//                        ELSE 'Education'
-//                   END AS category,
-//                   CONCAT('This is the content of blog ', n) AS content,
-//                   CONCAT('https://picsum.photos/800/400?random=', n) AS image,
-//                   CONCAT('This is a summary for blog ', n) AS summary,
-//                   CONCAT('Blog Title ', n) AS title
-//            FROM generate_series(1, 200) AS n;
-//        """);
+
 
         // Insert comments (Fixed column name: `app_user_id` instead of `user_id`)
 //        jdbcTemplate.execute("""
