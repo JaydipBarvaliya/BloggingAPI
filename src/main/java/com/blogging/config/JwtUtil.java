@@ -16,7 +16,7 @@ public class JwtUtil {
 
     // TODO: Move this secret and expiration_time into the application configuration.
     // @Value("${jwt.secret}")
-    private final String SECRET_KEY = "***REMOVED***";
+    private final String SECRET_KEY = "PLACEHOLDER";
 
     // @Value("${jwt.expiration}")
     private final long EXPIRATION_TIME = 86400000;
